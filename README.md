@@ -1,7 +1,7 @@
 # FullTextTagging
 The goal is to assist screeners with inclusion/exclusion decisions, when screening academic papers for systematic literature review.
 This project aims to annotate the data with suitable 'tags', that can further be used to assist the inclusion/exclusion decision.
----
+
 ## Environement
 The **CPU** conda environment can be created with command
 `conda env create -f cpu-env.yml`
@@ -25,16 +25,22 @@ data
 └───SD
 |    |
 |    └───test_data
+|    |    | ...
 |    |
 |    └───train_data
+|    |    | ...
 |    |
 |    └───validation_data
+|    |    | ...
 └───CNS
 |    |
 |    └───test_data
+|    |    | ...
 |    |
 |    └───train_data
+|    |    | ...
 |    |
 |    └───validation_data
+|    |    | ...
 ```
 

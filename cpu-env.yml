@@ -11,3 +11,6 @@ dependencies:
   - plotly
   - matplotlib
   - jupyterlab
+  - PyPDF2
+  - pdfminer.six
+  - pdfplumber
