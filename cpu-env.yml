@@ -1,0 +1,13 @@
+name: pytorch-env-cpu
+channels:
+- pytorch
+- conda-forge
+dependencies:
+- pytorch
+- cpuonly 
+- pip
+- pip:
+  - pandas
+  - plotly
+  - matplotlib
+  - jupyterlab
