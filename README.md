@@ -12,6 +12,14 @@ and if needed the environment can be updated (the environment has to bee active)
 
 The **GPU** environment will be created later.
 
+### API keys
+
+If using ChatGPT based models save your personal API key to file named `constants.py`
+e.g.
+`OPENAI_API_KEY = "your personal API key" `
+
+OBS! ChatGPT API charges by use, so it is useful to set limits for maximum charging
+
 ## Data
 The data folder includes a small tes set 'demo_data'.
 In addition the following file structure is assumed to be inside the folder (to be redefined).
@@ -44,3 +52,12 @@ data
 |    |    | ...
 ```
 
+### Getting the data?
+How is this done?
+
+## Architecture
+
+we use pydantic to create relevant data models:
+- Paper
+- Prompts
+- ...
