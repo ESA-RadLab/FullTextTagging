@@ -14,11 +14,10 @@ qa_prompt = PromptTemplate(
 study_type_prompt = PromptTemplate(
     input_variables=["context", "answer_length", "question"],
     template='Select the best option from "animal study", "human study", or "In vitro study"'
-    "for the questions below based on the provided context. "
+    "for the context provided below. "
     "If the context provides insufficient information and the question cannot be directly answered, "
     'reply "Unsure". '
     "Context (with relevance scores):\n {context}\n"
-    "Questions: {questions}\n"
     "Answer: ",
 )
 

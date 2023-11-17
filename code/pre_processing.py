@@ -5,6 +5,7 @@ import PyPDF2
 # To analyze the PDF layout and extract text
 from pdfminer.high_level import extract_pages, extract_text
 from pdfminer.layout import LTTextContainer, LTChar, LTRect, LTFigure
+from help_types import Text
 
 # fine tune the miner parameters
 from pdfminer.layout import LAParams
@@ -51,28 +52,30 @@ def filter_other_fonts(text_per_page):
     Inputs: text_per_page: dictionary for each pages linewise text, and format
     Outputs: Only the main text as a one string
     """
-    main_text = ""
-    i = 0
+    main_text = []
     flat_list = []
+    # find the most common font
     for page in text_per_page:
         for block in text_per_page[page][1]:
             for item in block:
                 flat_list.append(item)
     test = Counter(chain(flat_list))
     most_common_format = test.most_common(1)[0][0]
-
+    # filter based on the most common font
     for page in text_per_page:
-        for format, text in zip(text_per_page[page][1], text_per_page[page][0]):
+        for format, text, bbox in zip(
+            text_per_page[page][1], text_per_page[page][0], text_per_page[page][-1]
+        ):
             if most_common_format in format:
-                main_t = text
-                main_text += main_t
+                main_t = Text(text=text, page=int(page[-1]), bbox=bbox)
+                main_text.append(main_t)
     return main_text
 
 
 def extract_main_text(pdf_path):
     """
     pdf_path: relative or absolute path of the pdf in question
-    output: dictionary with page_x kays and values of the pdf content
+    output: dictionary with page_x keys and values of the pdf content
     """
     laparams = LAParams(
         line_margin=0.6, char_margin=3, boxes_flow=-0.6, word_margin=0.2
@@ -84,6 +87,7 @@ def extract_main_text(pdf_path):
         page_text = []
         line_format = []
         page_content = []
+        bounding_boxs = []
         # Open the pdf file
         # pdf = pdfplumber.open(pdf_path)
         # Find all the elements
@@ -105,16 +109,23 @@ def extract_main_text(pdf_path):
                 # Append the format for each line containing text
                 line_format.append(format_per_line)
                 page_content.append(line_text)
+                # bounding_boxs.append(element.bbox)
+                # get the bottom of the page, as the coordinate system is fixed at the left bottom corner
+                bottom = page.bbox[3]
+                x0 = element.x0
+                y1 = bottom - element.y0
+                x1 = element.x1
+                y0 = bottom - element.y1
+                # x0, y0_orig, x1, y1_orig = element.bbox
+                # y0 = page.mediabox[3] - y1_orig
+                # y1 = page.mediabox[3] - y0_orig
+                bounding_boxs.append([x0, y0, x1, y1])
 
         # Create the key of the dictionary
         dctkey = "Page_" + str(pagenum)
         all_formats.append(line_format)
         # Add the list of list as the value of the page key
-        text_per_page[dctkey] = [
-            page_text,
-            line_format,
-            page_content,
-        ]
+        text_per_page[dctkey] = [page_text, line_format, page_content, bounding_boxs]
 
     # Only include taxt in the most common font
     main_text = filter_other_fonts(text_per_page)
