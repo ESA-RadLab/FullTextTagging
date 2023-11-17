@@ -10,9 +10,6 @@ from help_types import Text
 # fine tune the miner parameters
 from pdfminer.layout import LAParams
 
-# To extract text from tables in PDF
-import pdfplumber
-
 from collections import Counter
 from itertools import chain
 

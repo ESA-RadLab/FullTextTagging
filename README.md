@@ -52,10 +52,28 @@ data
 |    |    | ...
 ```
 
-### Getting the data?
-How is this done?
 
 ## Architecture
+
+**Text extraction** - see ```pre_precessing.py```
+- PDFminer.six is used to extract the text from the pdf (assuming it's not an image pdf)
+- Format information is used to exclude titles, headers and references
+
+**Text embedding** - see  ```custom_types.py```
+- Use OpenAI to get text embedding for each chapter extracted by PDFminer
+
+**Context**
+- Get the most relevan context by finding the nearest chapters for the prompt using k-nearest? in the embedding space
+
+----
+
+## Classes
+
+**Paper Class** - see  ```custom_types.py```
+
+**Text Class** - see  ```help_types.py```
+
+**Anwser Class** - see  ```help_types.py```
 
 we use pydantic to create relevant data models:
 - Paper
