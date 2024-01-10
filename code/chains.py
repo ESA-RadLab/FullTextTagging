@@ -8,13 +8,18 @@ from langchain.callbacks.manager import (
 )
 from langchain.chains import LLMChain
 from langchain.chat_models import ChatOpenAI
-from langchain.memory.chat_memory import BaseChatMemory
 from langchain.prompts import PromptTemplate, StringPromptTemplate
 from langchain.prompts.chat import ChatPromptTemplate, HumanMessagePromptTemplate
 from langchain.schema import LLMResult, SystemMessage
 
-from .prompts import default_system_prompt
-from .types import CBManager
+from prompts import default_system_prompt
+from typing import Union
+from langchain.callbacks.manager import (
+    AsyncCallbackManagerForChainRun,
+    CallbackManagerForChainRun,
+)
+
+CBManager = Union[AsyncCallbackManagerForChainRun, CallbackManagerForChainRun]
 
 memory_prompt = PromptTemplate(
     input_variables=["memory", "start"],
@@ -52,7 +57,6 @@ def make_chain(
     prompt: StringPromptTemplate,
     llm: BaseLanguageModel,
     skip_system: bool = False,
-    memory: Optional[BaseChatMemory] = None,
     system_prompt: str = default_system_prompt,
 ) -> FallbackLLMChain:
     if type(llm) == ChatOpenAI:

@@ -14,3 +14,7 @@ dependencies:
   - PyPDF2
   - pdfminer.six
   - pdfplumber
+  - langchain
+  - openai
+  - tiktoken
+  - pdf2image

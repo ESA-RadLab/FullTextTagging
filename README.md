@@ -10,6 +10,8 @@ then activate with
 and if needed the environment can be updated (the environment has to bee active) based on the changed yml file as
 `conda env update --file cpu-env.yml --prune`
 
+**OBS!** In addition for visualizations Poppler needs to be downloaded from https://github.com/oschwartz10612/poppler-windows/releases/ and the path for it's location needs to be provided in the `constants.py` file as `poppler_path`, eg  `poppler_path = r"..\Release-23.11.0-0\poppler-23.11.0\Library\bin" `
+
 The **GPU** environment will be created later.
 
 ### API keys
