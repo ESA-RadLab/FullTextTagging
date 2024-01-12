@@ -23,6 +23,14 @@ e.g.
 OBS! ChatGPT API charges by use, so it is useful to set limits for maximum charging
 
 ## Data
+The data can be given as pdf's (less accurate) or as xml files generated with grobid.
+
+1. To generate the xml files first install the Grobid Docker image as https://grobid.readthedocs.io/en/latest/Grobid-docker/.
+2. Run the image with `docker run --rm --init --ulimit core=0 -p 8070:8070 lfoppiano/grobid:0.8.0`
+3. Pull the Grobid python API from github
+4. Generate the tei.xml output with the Grobid Python API as `grobid_client --input ../input_pdf_folder --output ../tmp/output_xml_folder --teiCoordinates processFulltextDocument`
+5. Use the python script to precess the grobit files as `python3 process_grobit_files.py --input_folder path/to/inputfolder --output_folder path/to/outputfolder`
+
 The data folder includes a small tes set 'demo_data'.
 In addition the following file structure is assumed to be inside the folder (to be redefined).
 ```bash

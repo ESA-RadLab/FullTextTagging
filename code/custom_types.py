@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field
 import asyncio
+import os
 from typing import Any, Callable, Dict, List, Optional, Set, Union, cast
 from langchain.schema.embeddings import Embeddings
 from langchain.chat_models import ChatOpenAI
@@ -21,7 +22,8 @@ class Paper(BaseModel, arbitrary_types_allowed=True):
     Class representing a single pdf File
     """
 
-    pdf_path: StrPath
+    file_path: StrPath
+    input_type = os.path.basename(file_path).rsplit(".")[-1]
     main_text: Optional[List[Text]] = []  #  extract_main_text(pdf_path)
     texts_index: Optional[VectorStore] = None
     # embeddings: Optional[List[float]] = None
@@ -60,7 +62,12 @@ class Paper(BaseModel, arbitrary_types_allowed=True):
                 t.embeddings = text_embeddings[i]
 
     def read_paper(self):
-        self.main_text = extract_main_text(self.pdf_path)
+        if self.input_type == 'pdf':
+            self.main_text = extract_main_text(self.file_path)
+        elif self.input_type == 'xml':
+            print('NOT IMPLEMENTED YET')
+        else:
+            raise ValueError(f'Input must be .pdf or .xml, not {self.input_type}')
 
     def _build_texts_index(self):  # keys: Optional[Set[DocKey]] = None
         if self.texts_index is None:
