@@ -5,6 +5,8 @@ from matplotlib.figure import Figure
 import pandas as pd
 import os
 from sklearn.metrics import confusion_matrix
+from help_types import Text
+from bs4 import BeautifulSoup
 
 # from difflib import SequenceMatcher
 import numpy as np
@@ -135,3 +137,40 @@ def print_confusion_matrix(true_labels, predicted_labels):
 
     print("Confusion Matrix:")
     print(confusion_df)
+
+
+def read_xml_file(file_path):
+    """
+    Read xml file, checks if the embeddings are also saved
+    true_labels: List of true labels
+    return: List of Text objects with or without embeddings
+    """
+    main_text = []
+    with open(file_path, "r", encoding="utf8") as f:
+        soup = BeautifulSoup(f, features="html.parser")  # html.parser
+    print("tags")
+    print([tag.name for tag in soup.find_all()])
+    paragraphs = [p.get_text(separator=" ", strip=True) for p in soup.find_all("p")]
+    if soup.find("embeddings"):
+        embeddings = soup.embeddings.find_all("e")
+        if len(embeddings) == len(paragraphs):
+            print("Embeddings were found in xml")
+            for embed, parag in zip(embeddings, paragraphs):
+                main_t = Text(
+                    text=parag,
+                    page=0,
+                    embeddings=[float(e) for e in embed.contents[0][1:-1].split(", ")],
+                )
+                main_text.append(main_t)
+        else:
+            print("not all embeddings were found")
+            print(len(embeddings))
+            print(len(paragraphs))
+            for paragraph in paragraphs:
+                main_t = Text(text=paragraph, page=0)
+                main_text.append(main_t)
+    else:
+        for paragraph in paragraphs:
+            main_t = Text(text=paragraph, page=0)
+            main_text.append(main_t)
+    return main_text

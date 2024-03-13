@@ -56,7 +56,9 @@ def main():
     if mode == "test":
         # Run in test mode
         result_df = process_annotation_file(annotations_filepath, args.max_test_n)
-        run_test_mode(result_df, poppler_path=constants.poppler_pat, input_type= args.input_type)
+        run_test_mode(
+            result_df, poppler_path=constants.poppler_path, input_type=args.input_type
+        )
         print("NOT FULLY IMPLEMENTED")
     elif mode == "run":
         # Run in regular mode
@@ -118,7 +120,7 @@ def process_annotation_file(file_path, test_n):
     return result_df
 
 
-def run_test_mode(result_df, poppler_path=None, input_type = 'pdf'):
+def run_test_mode(result_df, poppler_path=None, input_type="pdf"):
     """test the performanse with n samples"""
     data_path = "../data/test_SD_files/"
     plot_path = "../plots/"
@@ -135,19 +137,39 @@ def run_test_mode(result_df, poppler_path=None, input_type = 'pdf'):
     for file in result_df.iterrows():
         # print(file[1])
         file = file[1]
-        if input_type == 'pdf':
+        if input_type == "pdf":
             pdf_path = str(data_path) + str(file["PdfRelativePath"])
             if not os.path.exists(pdf_path):
                 print("File not found")
                 continue
-            paper = Paper(pdf_path=pdf_path, llm_embedder=llm_embedder, llm=llm)
+            paper = Paper(
+                file_path=pdf_path,
+                llm_embedder=llm_embedder,
+                llm=llm,
+                input_type=input_type,
+            )
             paper.read_paper()
             paper.embed_paper()
         else:
-            xml_path = data_path + os.path.basename(file["PdfRelativePath"]).rsplit(".")[0]
-            if not os.path.exists(pdf_path):
+            data_path = "../data/tmp/processed/"
+            xml_path = str(
+                data_path
+                + os.path.basename(file["PdfRelativePath"]).rsplit(".")[0]
+                + ".xml"
+            )
+            print(xml_path)
+            if not os.path.exists(xml_path):
+                print(xml_path)
                 print("File not found")
                 continue
+            paper = Paper(
+                file_path=xml_path,
+                llm_embedder=llm_embedder,
+                llm=llm,
+                input_type=input_type,
+            )
+            paper.read_paper()
+            paper.embed_paper()
 
         # visualize_boxes(pdf_path = pdf_path, texts=paper.main_text , relative=False)
         query = "methods:, does it use humans or animals as test subjects?"

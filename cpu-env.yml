@@ -18,3 +18,4 @@ dependencies:
   - openai
   - tiktoken
   - pdf2image
+  - lmxl

@@ -53,10 +53,9 @@ def filter_other_fonts(text_per_page):
     """
     This function removes all lines that are not written with the most common font type.
     Inputs: text_per_page: dictionary for each pages linewise text, and format
-    Outputs: Only the main text as a one string
+    Outputs: Only the main text as a list of Text objects
     """
     main_text = []
-    flat_list = []
     # find the most common font
 
     # Flatten the list of pages, chapters, and fonts

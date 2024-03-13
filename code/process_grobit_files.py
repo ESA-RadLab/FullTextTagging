@@ -7,7 +7,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--input_folder",
-        type = str,
+        type=str,
         help="Path to the input grobit folder.",
     )
     parser.add_argument(
@@ -17,14 +17,22 @@ def main():
     )
     args = parser.parse_args()
 
-    xml_files = [filename for filename in os.listdir(args.input_folder) if filename.endswith(".xml")]
+    xml_files = [
+        filename
+        for filename in os.listdir(args.input_folder)
+        if filename.endswith("tei.xml")
+    ]
     for xml_file in xml_files:
         file_path = os.path.join(args.input_folder, xml_file)
-        with open(file_path, 'r') as tei:
-            soup = BeautifulSoup(tei, 'lxml')
+        try:
+            with open(file_path, "r") as tei:
+                soup = BeautifulSoup(tei, "lxml")
+        except:
+            print(file_path)
+            continue
 
         # Find all div tags
-        div_tags = soup.find_all('div')
+        div_tags = soup.find_all("div")
         # Create a new XML document
         new_xml = BeautifulSoup(features="xml")
 
@@ -34,13 +42,17 @@ def main():
         root.append(soup.title)
 
         # add abstract to the xml file
-        for abstract_p in [p.get_text(separator=' ', strip=True) for p in soup.abstract.find_all('p')]:
+        for abstract_p in [
+            p.get_text(separator=" ", strip=True) for p in soup.abstract.find_all("p")
+        ]:
             a_tag = new_xml.new_tag("abstract")
             a_tag.string = abstract_p
             root.append(a_tag)
         # add main text
         for div_tag in div_tags:
-            paragraphs = [p.get_text(separator=' ', strip=True) for p in div_tag.find_all('p')]
+            paragraphs = [
+                p.get_text(separator=" ", strip=True) for p in div_tag.find_all("p")
+            ]
             # Add each paragraph as a new 'p' element under the root
             for paragraph in paragraphs:
                 p_tag = new_xml.new_tag("p")
@@ -52,12 +64,16 @@ def main():
         filename_without_extension = os.path.basename(file_path).rsplit(".")[0]
 
         # Construct the output XML file path using the original filename
-        output_path = os.path.join(args.output_folder, f'{filename_without_extension}.xml')
-        with open(output_path, 'w', encoding='utf-8') as output_file:
+        output_path = os.path.join(
+            args.output_folder, f"{filename_without_extension}.xml"
+        )
+
+        with open(output_path, "w", encoding="utf-8") as output_file:
             output_file.write(str(new_xml))
 
+
 def remove_references(tag):
-    return tag.name in ['biblstruct', 'listbibl', 'ref']
+    return tag.name in ["biblstruct", "listbibl", "ref"]
 
 
 if __name__ == "__main__":

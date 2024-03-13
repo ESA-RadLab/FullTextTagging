@@ -12,6 +12,8 @@ from pathlib import Path
 import sys
 from help_types import Text, Context, Answer, PromptCollection
 from chains import get_score, make_chain
+from utils import read_xml_file
+from bs4 import BeautifulSoup
 
 
 StrPath = Union[str, Path]
@@ -23,19 +25,20 @@ class Paper(BaseModel, arbitrary_types_allowed=True):
     """
 
     file_path: StrPath
-    input_type = os.path.basename(file_path).rsplit(".")[-1]
     main_text: Optional[List[Text]] = []  #  extract_main_text(pdf_path)
     texts_index: Optional[VectorStore] = None
+    llm_embedder: Optional[Embeddings] = None
     # embeddings: Optional[List[float]] = None
     # llm_embedder: Embeddings = OpenAIEmbeddings(client=None)
     prompts: PromptCollection = PromptCollection()
     # llm: Union[str, BaseLanguageModel] = ChatOpenAI(
     #    temperature=0.1, model="gpt-3.5-turbo", client=None
     # )
-    llm_embedder: Embeddings = Field(None)
     llm: Union[str, ChatOpenAI] = Field(None)
+    input_type: Optional[str] = "pdf"
+    # input_type = os.path.basename(file_path).rsplit(".")[-1]
 
-    def __init__(self, llm_embedder, llm, *args, **kwargs):
+    def __init__(self, llm, llm_embedder=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.llm_embedder = llm_embedder
         self.llm = llm
@@ -54,20 +57,42 @@ class Paper(BaseModel, arbitrary_types_allowed=True):
             self.main_text += t
 
     def embed_paper(self):
+        """embedds the text if embeddings were not read from xml file"""
         if self.main_text[0].embeddings is None:
             text_embeddings = self.llm_embedder.embed_documents(
                 [t.text for t in self.main_text]
             )
             for i, t in enumerate(self.main_text):
                 t.embeddings = text_embeddings[i]
+            self.save_embeddings_to_xml()
+        else:
+            print("Embeddings were already found")
+
+    def save_embeddings_to_xml(self):
+        """Saves the embeddings to the xml file"""
+        if self.input_type == "xml":
+            with open(self.file_path, "r+", encoding="utf-8") as f:
+                soup = BeautifulSoup(f, features="html.parser")
+                root = soup.new_tag("embeddings")
+                for text in self.main_text:
+                    p_tag = soup.new_tag("e")
+                    p_tag.string = str(text.embeddings)
+                    root.append(p_tag)
+                # soup.append(root)
+                f.write(str(root))
+
+        elif self.input_type == "pdf":
+            print("Not implemented yet")
 
     def read_paper(self):
-        if self.input_type == 'pdf':
+        """Reads paper either by element recognition in pdf
+        or from the xml file that might also have the embeddings"""
+        if self.input_type == "pdf":
             self.main_text = extract_main_text(self.file_path)
-        elif self.input_type == 'xml':
-            print('NOT IMPLEMENTED YET')
+        elif self.input_type == "xml":
+            self.main_text = read_xml_file(self.file_path)
         else:
-            raise ValueError(f'Input must be .pdf or .xml, not {self.input_type}')
+            raise ValueError(f"Input must be .pdf or .xml, not {self.input_type}")
 
     def _build_texts_index(self):  # keys: Optional[Set[DocKey]] = None
         if self.texts_index is None:
@@ -183,7 +208,7 @@ class Paper(BaseModel, arbitrary_types_allowed=True):
                 k=k,
                 length_prompt=length_prompt,
                 answer=answer,
-                prompt_type=prompt_type
+                prompt_type=prompt_type,
                 # get_callbacks=get_callbacks,
             )
         )
