@@ -3,10 +3,16 @@ The goal is to assist screeners with inclusion/exclusion decisions, when screeni
 This project aims to annotate the data with suitable 'tags', that can further be used to assist the inclusion/exclusion decision.
 
 
-The intuition behind this model is... 
-create visualization etc
+The intuition behind this model is that given a pdf of a research paper, 
+1. we divide the main text to chapters
+2. embed those chapters
+3. Find the k nearest chapters to the given prompt
+4. give those chapters as a context to LLM together with prompt engineered to prevent hallucinations
+5. Get the output tag from the LLM
 
-![plot](./overview.png)
+This is also visualized in the Figure below more in detail.
+
+![System architecture](./overview.png)
 ## Environement
 The **CPU** conda environment can be created with command
 `conda env create -f cpu-env.yml`
