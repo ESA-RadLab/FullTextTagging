@@ -92,5 +92,5 @@ Thus the model can be run for example as follows:
 
 **Text Class** - see  ```help_types.py```
 
-**Anwser Class** - see  ```help_types.py```
+**Answser Class** - see  ```help_types.py```
 
