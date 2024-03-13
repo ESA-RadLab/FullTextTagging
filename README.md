@@ -63,6 +63,9 @@ other keyword in the run command are:
 
 **Running the model**
 Thus the model can be run for example as follows: 
+1. Navigate to the folder `code`
+2. Run the following command within the conda env
+
  `python run.py --input_type pdf --infile ../data/test_SD_files/Annotation_data.csv --mode test --max_test_n 50`
 
 

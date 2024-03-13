@@ -185,7 +185,7 @@ def run_test_mode(result_df, poppler_path=None, input_type="pdf"):
             print(mid_answer)
             print(llm_answer.answer)
         query = (
-            "Is the study performed on living test subjects or to culured cell line?"
+            "Is the study performed on living test subjects or to cultured cell line?"
         )
         llm_answer = paper.query(query, prompt_type="type_1")
         mapping = {"In-vivo": mid_answer, "In-vitro": "Cells", "Unsure": "Unsure"}
