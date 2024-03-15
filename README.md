@@ -6,7 +6,7 @@ This project aims to annotate the data with suitable 'tags', that can further be
 The intuition behind this model is that given a pdf of a research paper, 
 1. we divide the main text to chapters
 2. embed those chapters
-3. Find the k nearest chapters to the given prompt
+3. Find the relevant chapters with similarity search using FAISS (https://github.com/facebookresearch/faiss)
 4. give those chapters as a context to LLM together with prompt engineered to prevent hallucinations
 5. Get the output tag from the LLM
 
@@ -95,3 +95,4 @@ Thus the model can be run for example as follows:
 
 **Answser Class** - see  ```help_types.py```
 
+The code base adapts from code from https://github.com/whitead/paper-qa
