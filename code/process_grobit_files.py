@@ -25,10 +25,11 @@ def main():
     for xml_file in xml_files:
         file_path = os.path.join(args.input_folder, xml_file)
         try:
-            with open(file_path, "r") as tei:
+            with open(file_path, "r", encoding="utf8") as tei:
                 soup = BeautifulSoup(tei, "lxml")
-        except:
-            print(file_path)
+        except Exception as error:
+            print("failed parsing a file with error ", error)
+            print("file name:", file_path)
             continue
 
         # Find all div tags

@@ -1,6 +1,7 @@
 # FullTextTagging
 The goal is to assist screeners with inclusion/exclusion decisions, when screening academic papers for systematic literature review.
 This project aims to annotate the data with suitable 'tags', that can further be used to assist the inclusion/exclusion decision.
+The approach taken here aims to implement a naive Retrieval Augumented Generation (RAG) model to obtain costefficiency regardless of the fairly large context size of scientific papers. 
 
 
 The intuition behind this model is that given a pdf of a research paper, 

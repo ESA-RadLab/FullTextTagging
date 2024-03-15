@@ -65,8 +65,8 @@ class Paper(BaseModel, arbitrary_types_allowed=True):
             for i, t in enumerate(self.main_text):
                 t.embeddings = text_embeddings[i]
             self.save_embeddings_to_xml()
-        else:
-            print("Embeddings were already found")
+        # else:
+        # print("Embeddings were already found")
 
     def save_embeddings_to_xml(self):
         """Saves the embeddings to the xml file"""

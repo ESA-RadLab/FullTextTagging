@@ -19,11 +19,18 @@ from utils import connect_str_to_class, print_confusion_matrix, visualize_boxes
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "infile",
+        "--infile",
         nargs="?",
         const="../data/test_SD_files/Annotation_data.csv",
         default="../data/test_SD_files/Annotation_data.csv",
         help="Path to the input CSV file.",
+    )
+    parser.add_argument(
+        "--data_path",
+        nargs="?",
+        const="../data/test_SD_files",
+        default="../data/test_SD_files/",
+        help="Path to the data folder",
     )
     parser.add_argument(
         "--mode",
@@ -57,7 +64,10 @@ def main():
         # Run in test mode
         result_df = process_annotation_file(annotations_filepath, args.max_test_n)
         run_test_mode(
-            result_df, poppler_path=constants.poppler_path, input_type=args.input_type
+            result_df,
+            args.data_path,
+            poppler_path=constants.poppler_path,
+            input_type=args.input_type,
         )
         print("NOT FULLY IMPLEMENTED")
     elif mode == "run":
@@ -120,9 +130,8 @@ def process_annotation_file(file_path, test_n):
     return result_df
 
 
-def run_test_mode(result_df, poppler_path=None, input_type="pdf"):
+def run_test_mode(result_df, data_path, poppler_path=None, input_type="pdf"):
     """test the performanse with n samples"""
-    data_path = "../data/test_SD_files/"
     plot_path = "../plots/"
     llm_embedder: Embeddings = OpenAIEmbeddings(client=None)
     llm: Union[str, BaseLanguageModel] = ChatOpenAI(
@@ -132,6 +141,9 @@ def run_test_mode(result_df, poppler_path=None, input_type="pdf"):
     true_labels = []
     predicted_labels = []
 
+    files_not_found = 0
+    empty_files = 0
+
     # List to store misclassified papers
     misclassified_papers = []
     for file in result_df.iterrows():
@@ -140,7 +152,7 @@ def run_test_mode(result_df, poppler_path=None, input_type="pdf"):
         if input_type == "pdf":
             pdf_path = str(data_path) + str(file["PdfRelativePath"])
             if not os.path.exists(pdf_path):
-                print("File not found")
+                files_not_found += 1
                 continue
             paper = Paper(
                 file_path=pdf_path,
@@ -157,10 +169,9 @@ def run_test_mode(result_df, poppler_path=None, input_type="pdf"):
                 + os.path.basename(file["PdfRelativePath"]).rsplit(".")[0]
                 + ".xml"
             )
-            print(xml_path)
+            # print(xml_path)
             if not os.path.exists(xml_path):
-                print(xml_path)
-                print("File not found")
+                files_not_found += 1
                 continue
             paper = Paper(
                 file_path=xml_path,
@@ -169,6 +180,9 @@ def run_test_mode(result_df, poppler_path=None, input_type="pdf"):
                 input_type=input_type,
             )
             paper.read_paper()
+            if len(paper.main_text) == 0:
+                empty_files += 1
+                continue
             paper.embed_paper()
 
         # visualize_boxes(pdf_path = pdf_path, texts=paper.main_text , relative=False)
@@ -216,14 +230,14 @@ def run_test_mode(result_df, poppler_path=None, input_type="pdf"):
             llm_answer.formatted_answer != "Unsure"
         ):
             print("\n")
+            print("Ground truth: ")
             print(file["This article concerns "])
             print(file["Please give details"])
             print("Prediction:")
-            print(mid_answer)
+            # print(mid_answer)
             print(final_answer)
-            print(llm_answer.answer)
-            print(llm_answer.formatted_answer)
-            print(pdf_path)
+            # print(llm_answer.answer)
+            # print(llm_answer.formatted_answer)
             # visualize_boxes(
             #    pdf_path=pdf_path,
             #    texts=paper.main_text,
@@ -235,10 +249,13 @@ def run_test_mode(result_df, poppler_path=None, input_type="pdf"):
             print(llm_answer.context)
             misclassified_papers.append(misclassified_papers.append(paper))
 
-    print("Labels:")
-    print(true_labels)
-    print(predicted_labels)
+    # print("Labels:")
+    # print(true_labels)
+    # print(predicted_labels)
     print_confusion_matrix(true_labels, predicted_labels)
+
+    print("Number of files not found: ", files_not_found)
+    print("Number of empty files: ", empty_files)
 
 
 if __name__ == "__main__":

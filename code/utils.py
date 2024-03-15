@@ -148,13 +148,11 @@ def read_xml_file(file_path):
     main_text = []
     with open(file_path, "r", encoding="utf8") as f:
         soup = BeautifulSoup(f, features="html.parser")  # html.parser
-    print("tags")
-    print([tag.name for tag in soup.find_all()])
     paragraphs = [p.get_text(separator=" ", strip=True) for p in soup.find_all("p")]
     if soup.find("embeddings"):
         embeddings = soup.embeddings.find_all("e")
         if len(embeddings) == len(paragraphs):
-            print("Embeddings were found in xml")
+            # "Embeddings were found in xml"
             for embed, parag in zip(embeddings, paragraphs):
                 main_t = Text(
                     text=parag,
@@ -163,9 +161,9 @@ def read_xml_file(file_path):
                 )
                 main_text.append(main_t)
         else:
-            print("not all embeddings were found")
-            print(len(embeddings))
-            print(len(paragraphs))
+            # print("not all embeddings were found")
+            # print(len(embeddings))
+            # print(len(paragraphs))
             for paragraph in paragraphs:
                 main_t = Text(text=paragraph, page=0)
                 main_text.append(main_t)
