@@ -37,8 +37,9 @@ The data can be given as pdf's (less accurate) or as xml files generated with gr
 1. To generate the xml files first install the Grobid Docker image as https://grobid.readthedocs.io/en/latest/Grobid-docker/.
 2. Run the image with `docker run --rm --init --ulimit core=0 -p 8070:8070 lfoppiano/grobid:0.8.0`
 3. Pull the Grobid python API from github (https://github.com/kermitt2/grobid_client_python)
-4. Generate the tei.xml output with the Grobid Python API as `grobid_client --input ../input_pdf_folder --output ../tmp/output_xml_folder --teiCoordinates processFulltextDocument`
-5. Use the python script to precess the grobit files as `python3 process_grobit_files.py --input_folder path/to/inputfolder --output_folder path/to/outputfolder`
+4. Install the python API and run the next command from the robid_client_python folder
+5. Generate the tei.xml output with the Grobid Python API as `grobid_client --input ../input_pdf_folder --output ../tmp/output_xml_folder --teiCoordinates processFulltextDocument`
+6. Use the python script to precess the grobit files as `python3 process_grobit_files.py --input_folder path/to/inputfolder --output_folder path/to/outputfolder`
 
 Another option is to provide just the pdf file. see ```pre_precessing.py```
 - PDFminer.six is used to extract the text from the pdf (assuming it's not an image pdf)
