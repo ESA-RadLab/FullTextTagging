@@ -70,6 +70,8 @@ Thus the model can be run for example as follows:
 
  `python run.py --input_type pdf --infile ../data/test_SD_files/Annotation_data.csv --mode test --max_test_n 50`
 
+ `python run.py --input_type xml --infile ../data/test_SD_files/Annotation_data.csv --data_path ../data/processed_xml_files --mode test --max_test_n 50`
+
 
 ## Architecture of the code base
 
